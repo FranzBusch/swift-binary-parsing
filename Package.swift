@@ -20,7 +20,15 @@ let package = Package(
     .macOS(.v13), .iOS(.v16), .watchOS(.v9), .tvOS(.v16), .visionOS(.v1),
   ],
   products: [
-    .library(name: "BinaryParsing", targets: ["BinaryParsing"])
+    .library(name: "BinaryParsing", targets: ["BinaryParsing"]),
+    .library(name: "BinaryParsingAsync", targets: ["BinaryParsingAsync"]),
+  ],
+  traits: [
+    .default(enabledTraits: ["UnstableAsyncStreaming"]),
+    .trait(
+      name: "UnstableAsyncStreaming",
+      description: "Enables BinaryParsingAsync module using async streaming from swift-async-algorithms."
+    ),
   ],
   dependencies: [
     .package(
@@ -32,6 +40,7 @@ let package = Package(
       from: "0.6.4"),
     .package(
       url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.0.0"),
+    .package(path: "../swift-async-algorithms"),
   ],
   targets: [
     .target(
@@ -40,6 +49,20 @@ let package = Package(
       swiftSettings: [
         .enableExperimentalFeature("Lifetimes"),
         .strictMemorySafety(),
+      ]
+    ),
+    .target(
+      name: "BinaryParsingAsync",
+      dependencies: [
+        "BinaryParsing",
+        .product(name: "AsyncStreaming", package: "swift-async-algorithms", condition: .when(traits: ["UnstableAsyncStreaming"])),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("Lifetimes"),
+        .enableExperimentalFeature("LifetimeDependence"),
+        .enableUpcomingFeature("LifetimeDependence"),
+        .enableUpcomingFeature("InternalImportsByDefault"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
       ]
     ),
     .macro(
@@ -86,6 +109,23 @@ let package = Package(
         "BinaryParsing",
         "ParserTest",
         "TestData",
+      ]
+    ),
+    .testTarget(
+      name: "BinaryParsingAsyncTests",
+      dependencies: [
+        "BinaryParsingAsync",
+        "BinaryParsing",
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("Lifetimes"),
+        .enableExperimentalFeature("LifetimeDependence"),
+        .enableUpcomingFeature("LifetimeDependence"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+        .enableUpcomingFeature("InferIsolatedConformances"),
+        .enableUpcomingFeature("ExistentialAny"),
+        .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("InternalImportsByDefault"),
       ]
     ),
     .testTarget(
