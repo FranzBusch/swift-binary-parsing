@@ -22,6 +22,7 @@ let package = Package(
   products: [
     .library(name: "BinaryParsing", targets: ["BinaryParsing"]),
     .library(name: "BinaryParsingAsync", targets: ["BinaryParsingAsync"]),
+    .library(name: "BinarySerialization", targets: ["BinarySerialization"]),
   ],
   traits: [
     .default(enabledTraits: ["UnstableAsyncStreaming"]),
@@ -53,6 +54,20 @@ let package = Package(
     ),
     .target(
       name: "BinaryParsingAsync",
+      dependencies: [
+        "BinaryParsing",
+        .product(name: "AsyncStreaming", package: "swift-async-algorithms", condition: .when(traits: ["UnstableAsyncStreaming"])),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("Lifetimes"),
+        .enableExperimentalFeature("LifetimeDependence"),
+        .enableUpcomingFeature("LifetimeDependence"),
+        .enableUpcomingFeature("InternalImportsByDefault"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+      ]
+    ),
+    .target(
+      name: "BinarySerialization",
       dependencies: [
         "BinaryParsing",
         .product(name: "AsyncStreaming", package: "swift-async-algorithms", condition: .when(traits: ["UnstableAsyncStreaming"])),
@@ -115,6 +130,23 @@ let package = Package(
       name: "BinaryParsingAsyncTests",
       dependencies: [
         "BinaryParsingAsync",
+        "BinaryParsing",
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("Lifetimes"),
+        .enableExperimentalFeature("LifetimeDependence"),
+        .enableUpcomingFeature("LifetimeDependence"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+        .enableUpcomingFeature("InferIsolatedConformances"),
+        .enableUpcomingFeature("ExistentialAny"),
+        .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("InternalImportsByDefault"),
+      ]
+    ),
+    .testTarget(
+      name: "BinarySerializationTests",
+      dependencies: [
+        "BinarySerialization",
         "BinaryParsing",
       ],
       swiftSettings: [
