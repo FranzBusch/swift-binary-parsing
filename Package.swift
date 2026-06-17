@@ -41,7 +41,7 @@ let package = Package(
       from: "0.6.4"),
     .package(
       url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.0.0"),
-    .package(path: "../swift-async-algorithms"),
+    .package(url: "https://github.com/apple/swift-async-algorithms.git", revision: "8ee3d2be1961950f94b6fa758477e3a0c5486aa9"),
   ],
   targets: [
     .target(
